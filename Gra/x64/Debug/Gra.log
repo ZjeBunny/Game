@@ -1,2 +1,3 @@
-﻿MSVCRTD.lib(exe_winmain.obj) : error LNK2019: unresolved external symbol WinMain referenced in function "int __cdecl invoke_main(void)" (?invoke_main@@YAHXZ)
-C:\Users\klaud\Documents\Gra\x64\Debug\Gra.exe : fatal error LNK1120: 1 unresolved externals
+﻿  Game.cpp
+C:\Users\klaud\Documents\Gra\Gra\src\Game.cpp(17,14): warning C4804: '>=': unsafe use of type 'bool' in operation
+  Gra.vcxproj -> C:\Users\klaud\Documents\Gra\x64\Debug\Gra.exe

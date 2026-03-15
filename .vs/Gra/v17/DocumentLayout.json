@@ -3,16 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\klaud\\Documents\\Gra\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{69895CC8-ADF3-497D-B289-5DB7B37E95F8}|Gra\\Gra.vcxproj|C:\\Users\\klaud\\Documents\\Gra\\Gra\\game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{69895CC8-ADF3-497D-B289-5DB7B37E95F8}|Gra\\Gra.vcxproj|solutionrelative:Gra\\game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{69895CC8-ADF3-497D-B289-5DB7B37E95F8}|Gra\\Gra.vcxproj|C:\\Users\\klaud\\Documents\\Gra\\Gra\\Game.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
-      "RelativeMoniker": "D:0:0:{69895CC8-ADF3-497D-B289-5DB7B37E95F8}|Gra\\Gra.vcxproj|solutionrelative:Gra\\Game.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+      "AbsoluteMoniker": "D:0:0:{69895CC8-ADF3-497D-B289-5DB7B37E95F8}|Gra\\Gra.vcxproj|C:\\Users\\klaud\\Documents\\Gra\\Gra\\src\\Game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{69895CC8-ADF3-497D-B289-5DB7B37E95F8}|Gra\\Gra.vcxproj|solutionrelative:Gra\\src\\Game.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{69895CC8-ADF3-497D-B289-5DB7B37E95F8}|Gra\\Gra.vcxproj|C:\\Users\\klaud\\Documents\\Gra\\Gra\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
       "RelativeMoniker": "D:0:0:{69895CC8-ADF3-497D-B289-5DB7B37E95F8}|Gra\\Gra.vcxproj|solutionrelative:Gra\\main.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{69895CC8-ADF3-497D-B289-5DB7B37E95F8}|Gra\\Gra.vcxproj|C:\\Users\\klaud\\Documents\\Gra\\Gra\\src\\Game.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{69895CC8-ADF3-497D-B289-5DB7B37E95F8}|Gra\\Gra.vcxproj|solutionrelative:Gra\\src\\Game.hpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
     }
   ],
   "DocumentGroupContainers": [
@@ -26,26 +26,26 @@
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "Game.hpp",
-              "DocumentMoniker": "C:\\Users\\klaud\\Documents\\Gra\\Gra\\Game.hpp",
-              "RelativeDocumentMoniker": "Gra\\Game.hpp",
-              "ToolTip": "C:\\Users\\klaud\\Documents\\Gra\\Gra\\Game.hpp",
-              "RelativeToolTip": "Gra\\Game.hpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAABXAAAAAAAAAA==",
+              "DocumentMoniker": "C:\\Users\\klaud\\Documents\\Gra\\Gra\\src\\Game.hpp",
+              "RelativeDocumentMoniker": "Gra\\src\\Game.hpp",
+              "ToolTip": "C:\\Users\\klaud\\Documents\\Gra\\Gra\\src\\Game.hpp",
+              "RelativeToolTip": "Gra\\src\\Game.hpp",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAeAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2026-03-15T15:06:03.73Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "main.cpp",
               "DocumentMoniker": "C:\\Users\\klaud\\Documents\\Gra\\Gra\\main.cpp",
               "RelativeDocumentMoniker": "Gra\\main.cpp",
               "ToolTip": "C:\\Users\\klaud\\Documents\\Gra\\Gra\\main.cpp",
               "RelativeToolTip": "Gra\\main.cpp",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAjAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2026-03-15T14:02:51.369Z",
               "EditorCaption": ""
@@ -54,11 +54,11 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "Game.cpp",
-              "DocumentMoniker": "C:\\Users\\klaud\\Documents\\Gra\\Gra\\Game.cpp",
-              "RelativeDocumentMoniker": "Gra\\Game.cpp",
-              "ToolTip": "C:\\Users\\klaud\\Documents\\Gra\\Gra\\Game.cpp",
-              "RelativeToolTip": "Gra\\Game.cpp",
-              "ViewState": "AgIAACUAAAAAAAAAAAAgwD8AAAABAAAAAAAAAA==",
+              "DocumentMoniker": "C:\\Users\\klaud\\Documents\\Gra\\Gra\\src\\Game.cpp",
+              "RelativeDocumentMoniker": "Gra\\src\\Game.cpp",
+              "ToolTip": "C:\\Users\\klaud\\Documents\\Gra\\Gra\\src\\Game.cpp",
+              "RelativeToolTip": "Gra\\src\\Game.cpp",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABAAAAAfAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
               "WhenOpened": "2026-03-15T14:01:58.916Z",
               "EditorCaption": ""

@@ -1,17 +1,20 @@
-#include <SDL3/SDL.h>
-#define SDL_MAIN_USE_CALLBACKS
+#include "src/Game.hpp"
+
+Game *game = nullptr;   
 int main(int argc, char* argv[])
 {
-    SDL_Init(SDL_INIT_VIDEO);
+	game = new Game();
 
-    SDL_Window* window = SDL_CreateWindow("Hello World",600,400,SDL_WINDOW_RESIZABLE);
-	SDL_Renderer* renderer = SDL_CreateRenderer(window, nullptr);
+	game->init("Stock Market Simulator", 800, 600, false);
 
-	SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-	SDL_RenderClear(renderer);
-	SDL_RenderPresent(renderer);
+	while (game->running())
+	{
+		game->handleEvents();
+		game->update();
+		game->render();
 
-	SDL_Delay(3000);
+	}
 
+	game->clean();
     return 0;
 }

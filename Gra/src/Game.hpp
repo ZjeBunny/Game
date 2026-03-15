@@ -2,6 +2,7 @@
 
 #include <SDL3/SDL.h>
 #include <iostream>
+#include <SDL3_image/SDL_image.h>
 
 class Game {
 	public:

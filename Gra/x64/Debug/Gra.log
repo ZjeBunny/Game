@@ -1,3 +1,2 @@
 ﻿  Game.cpp
-C:\Users\klaud\Documents\Gra\Gra\src\Game.cpp(17,14): warning C4804: '>=': unsafe use of type 'bool' in operation
   Gra.vcxproj -> C:\Users\klaud\Documents\Gra\x64\Debug\Gra.exe

@@ -19,16 +19,16 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 	}
 
 	if (SDL_Init(SDL_INIT_VIDEO)) {
-		std::cout << "Subsystems Initialized!..." << std::endl; 
+		LOG("Subsystems Initialized!...");
 		
 		window = SDL_CreateWindow(title, width, height, flags);
 
 		if(window) {
-			std::cout << "Window created!" << std::endl;
+			LOG("Window created!");
 			renderer = SDL_CreateRenderer(window, nullptr);
 		if (renderer) {
 			SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-			std::cout << "Renderer created!" << std::endl;
+			LOG("Renderer created!");
 		}
 		isRunning = true;
 		}
@@ -48,7 +48,7 @@ void Game::handleEvents()
 			break;
 		case SDL_EVENT_MOUSE_BUTTON_DOWN:
 			if (event.button.button == SDL_BUTTON_LEFT) {
-				std::cout << "Left mouse button clicked at (" << event.button.x << ", " << event.button.y << ")" << std::endl;
+				LOG("Left mouse button clicked at (" << event.button.x << ", " << event.button.y << ")");
 			}
 			break;
 		}
@@ -83,7 +83,7 @@ void Game::clean()
 	SDL_DestroyTexture(BigYahulTex);
 	SDL_DestroyRenderer(renderer);
 	SDL_Quit();
-	std::cout << "Game Cleaned!" << std::endl;
+	LOG("Game Cleaned!");
 	
 }
 

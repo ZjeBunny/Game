@@ -4,6 +4,13 @@
 #include <iostream>
 #include <SDL3_image/SDL_image.h>
 
+
+#ifdef G_DEBUG
+#define LOG(arg) std::cout <<arg<<"\n"
+#else
+#define LOG(arg)
+#endif
+
 class Game {
 	public:
 		Game();

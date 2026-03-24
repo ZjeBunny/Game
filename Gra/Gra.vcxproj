@@ -137,14 +137,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Game.cpp" />
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="src\source\GameObject.cpp" />
+    <ClCompile Include="src\source\Game.cpp" />
+    <ClCompile Include="src\source\main.cpp">
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\SDL3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\SDL3\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Game.hpp" />
+    <ClInclude Include="src\include\GameObject.hpp" />
+    <ClInclude Include="src\include\Game.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

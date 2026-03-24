@@ -16,13 +16,17 @@ void Game::init(const char* title, int width, int height, bool fullscreen)
 	int flags = SDL_WINDOW_RESIZABLE;
 	if (fullscreen) {
 		flags += SDL_WINDOW_FULLSCREEN;
-	}
+	}	
+	
+	
 
 	if (SDL_Init(SDL_INIT_VIDEO)) {
 		LOG("Subsystems Initialized!...");
 		
 		window = SDL_CreateWindow(title, width, height, flags);
-
+		if (!fullscreen) {
+			SDL_MaximizeWindow(window);
+		}
 		if(window) {
 			LOG("Window created!");
 			renderer = SDL_CreateRenderer(window, nullptr);

@@ -1,0 +1,24 @@
+# Visual Studio
+.vs/
+
+# Build folders
+x64/
+build/
+src/x64
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# Binaries
+*.exe
+*.dll
+*.obj
+*.o
+*.pdb
+*.ilk
+
+# VS project files (opcjonalnie)
+*.sln
+*.vcxproj

@@ -25,7 +25,7 @@ class Game {
 		bool running() { return isRunning; }
 	private:
 		bool isRunning;
-	
+		bool isFullscreen;
 		SDL_Window *window;
 		SDL_Renderer *renderer;
 	};

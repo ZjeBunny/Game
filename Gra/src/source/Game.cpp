@@ -1,10 +1,10 @@
 #include "../include/Game.hpp"
-
+#include "../include/GameObject.hpp"
 
 SDL_Texture* BigYahulTex = nullptr;
 
 
-Game::Game() : isRunning(false), window(nullptr), renderer(nullptr)
+Game::Game() : isRunning(false), window(nullptr), renderer(nullptr), isFullscreen(false)
 {
 }
 Game::~Game()
@@ -12,21 +12,18 @@ Game::~Game()
 }
 
 void Game::init(const char* title, int width, int height, bool fullscreen)
-{
+{	
+	isFullscreen = fullscreen;
 	int flags = SDL_WINDOW_RESIZABLE;
 	if (fullscreen) {
-		flags += SDL_WINDOW_FULLSCREEN;
-	}	
-	
-	
+		flags |= SDL_WINDOW_FULLSCREEN;
+	}
 
-	if (SDL_Init(SDL_INIT_VIDEO)) {
+	if (SDL_Init(SDL_INIT_VIDEO) == 1) {
 		LOG("Subsystems Initialized!...");
 		
 		window = SDL_CreateWindow(title, width, height, flags);
-		if (!fullscreen) {
-			SDL_MaximizeWindow(window);
-		}
+		if (!isFullscreen) SDL_MaximizeWindow(window);
 		if(window) {
 			LOG("Window created!");
 			renderer = SDL_CreateRenderer(window, nullptr);
@@ -55,6 +52,18 @@ void Game::handleEvents()
 				LOG("Left mouse button clicked at (" << event.button.x << ", " << event.button.y << ")");
 			}
 			break;
+		case SDL_EVENT_KEY_DOWN:
+			LOG("Key pressed: %s", SDL_GetKeyName(event.key.key));
+			if (event.key.key == SDLK_F11) {
+				isFullscreen = !isFullscreen;
+
+				if (isFullscreen) 
+					SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+				else 
+					SDL_SetWindowFullscreen(window, 0);
+					SDL_MaximizeWindow(window);
+			}
+			break;
 		}
 		
 	}
@@ -69,7 +78,7 @@ void Game::update()
 void Game::render()
 {
 	SDL_RenderClear(renderer);
-	//stuff to render:
+	//tuff to render:
 	SDL_FRect spriteRect;
 	int width = 0, height = 0;
 	SDL_GetRenderOutputSize(renderer, &width, &height);
@@ -83,12 +92,11 @@ void Game::render()
 
 void Game::clean()
 {
-	SDL_DestroyWindow(window);
 	SDL_DestroyTexture(BigYahulTex);
 	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
 	SDL_Quit();
 	LOG("Game Cleaned!");
-	
 }
 
 

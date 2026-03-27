@@ -1,9 +1,10 @@
 #pragma once
-class GameObject
+class GameStats
 {
 public:
-	GameObject();
-	~GameObject();
+	GameStats();
+	~GameStats();
+	void GameLoadStats();
 	void GameIcremeantStars();
 	unsigned long long GetStars() { return stars; };
 private:

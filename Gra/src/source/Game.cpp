@@ -1,5 +1,8 @@
 #include "../include/Game.hpp"
-#include "../include/GameObject.hpp"
+#include "../include/GameStats.hpp"
+
+GameStats* stats = nullptr;
+
 
 SDL_Texture* BigYahulTex = nullptr;
 
@@ -63,7 +66,12 @@ void Game::handleEvents()
 					SDL_SetWindowFullscreen(window, 0);
 					SDL_MaximizeWindow(window);
 			}
+			if (event.key.key == SDLK_ESCAPE) {
+				
+				
+			}
 			break;
+		
 		}
 		
 	}
@@ -72,21 +80,28 @@ void Game::handleEvents()
 
 
 void Game::update()
-{
+{ 
+	
+	stats = new GameStats;
+
+	unsigned long long stars = stats->GetStars();
+
+
 }
 
 void Game::render()
 {
 	SDL_RenderClear(renderer);
-	//tuff to render:
-	SDL_FRect spriteRect;
+	//atuff to render:
+	SDL_FRect dstrect;
 	int width = 0, height = 0;
 	SDL_GetRenderOutputSize(renderer, &width, &height);
-	SDL_GetTextureSize(BigYahulTex, &spriteRect.w, &spriteRect.h);
-	spriteRect.x = (width - spriteRect.w) / 2;
-	spriteRect.y = (height - spriteRect.h) / 2;
+	SDL_GetTextureSize(BigYahulTex, &dstrect.w, &dstrect.h);
+	dstrect.x = (width - dstrect.w) / 16;
+	dstrect.y = (height - dstrect.h) / 16;
 
-	SDL_RenderTexture(renderer, BigYahulTex, nullptr, &spriteRect);
+
+	SDL_RenderTexture(renderer, BigYahulTex, nullptr , &dstrect);
 	SDL_RenderPresent(renderer);
 }
 

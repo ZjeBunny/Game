@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Visual Studio
 .vs/
 
@@ -22,3 +23,10 @@ cmake_install.cmake
 # VS project files (opcjonalnie)
 *.sln
 *.vcxproj
+=======
+/x64
+/src/x64
+*.sln
+*.vcxproj
+/.vs
+>>>>>>> b72e671509a082473721d2a65eb04119ef1269a8

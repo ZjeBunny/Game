@@ -9,6 +9,5 @@ public:
 	unsigned long long GetStars() { return stars; };
 private:
 	unsigned long long stars;
-	
 };
 

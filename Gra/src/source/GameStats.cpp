@@ -1,7 +1,7 @@
 #include "../include/GameStats.hpp"
-double multiplier = 1.0;
+float multiplier = 5.0f;
 
-GameStats::GameStats() : stars(100000)
+GameStats::GameStats() : stars(0)
 {
 }
 
@@ -14,6 +14,6 @@ void GameStats::GameLoadStats() {
 }
 
 void GameStats::GameIcremeantStars() {
-	int starsFromClick = 1 * multiplier;
+	float starsFromClick = 1.0f * multiplier;
 	stars += starsFromClick;
 }

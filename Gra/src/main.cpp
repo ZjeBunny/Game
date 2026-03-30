@@ -5,7 +5,7 @@ int main(int argc, char* argv[])
 {
 	game = new Game();
 
-	game->init("Stock Market Simulator", 1280, 960, false);
+	game->init("Yahuk incremental clicker", 1280, 960, false, false);
 	
 	while (game->running())
 	{

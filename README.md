@@ -1,4 +1,4 @@
 # Yahul clicker
 ---
-Simpel clicker game made in SDL from scratch
+### Simpel clicker game made in SDL from scratch
 ---

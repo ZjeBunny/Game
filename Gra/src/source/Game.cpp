@@ -54,7 +54,7 @@ void Game::handleEvents()
 			if (event.button.button == SDL_BUTTON_LEFT) {
 				LOG("Left mouse button clicked at (" << event.button.x << ", " << event.button.y << ")");
 
-				{//Handle click on main clicker
+				{	//Handle click on main clicker
 					if (event.button.x >= MainClicker.x &&
 						event.button.x <= MainClicker.x + MainClicker.w &&
 						event.button.y >= MainClicker.y &&

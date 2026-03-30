@@ -4,7 +4,7 @@ std::unique_ptr<Game> game = std::make_unique<Game>();
 int main(int argc, char* argv[])
 {
 
-	game->init("Yahul incremental clicker", 1280, 960, false, false);
+	game->init("Yahul incremental clicker", 1200, 900, false, false);
 	
 	while (game->running())
 	{
@@ -14,5 +14,5 @@ int main(int argc, char* argv[])
 	}
 	
 	game->clean();
-	return 0;
+	return SDL_APP_SUCCESS;
 }

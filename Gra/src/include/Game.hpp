@@ -11,7 +11,8 @@
 #define LOG(arg)
 #endif
 
-class Game {
+class Game 
+{
 	public:
 		Game();
 		
@@ -34,4 +35,4 @@ class Game {
 		TTF_Font *font = nullptr;
 		SDL_FRect MainClicker;
 		SDL_FRect PlayButtonRect;
-	};
+};

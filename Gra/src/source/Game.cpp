@@ -29,13 +29,18 @@ void Game::init(const char* title, int width, int height, bool fullscreen, bool 
 			renderer = SDL_CreateRenderer(window, nullptr);
 			if (renderer) {
 				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+				SDL_SetRenderVSync(renderer, 0);
 				LOG("Renderer created!");
+				SDL_RenderClear(renderer);
+
 			}
 			SDL_SetWindowMinimumSize(window, 1200, 900);
 		isRunning = true;
 		}
-		BigYahulTex = IMG_LoadTexture(renderer, "assets/images/BigYahul.png");
-		PlayButtonTex = IMG_LoadTexture(renderer, "assets/paly_button/play_button1.png");
+		SDL_Surface* IconSurface = IMG_Load("assets/images/BigYahul.png");
+		SDL_SetWindowIcon(window, IconSurface);
+		SDL_DestroySurface(IconSurface);
+		PlayButtonTex = IMG_LoadTexture(renderer, "assets/play_button/play_button1.png");
 	}
 
 }
@@ -67,16 +72,20 @@ void Game::handleEvents()
 						event.button.y >= PlayButtonRect.y &&
 						event.button.y <= PlayButtonRect.y + PlayButtonRect.h) {
 						LOG("Play Button clicked!");
+						SDL_DestroyTexture(PlayButtonTex);
 						SDL_Delay(200);
 						for(int i = 1; i <=8; i++) {
-							SDL_Texture* tempTex = IMG_LoadTexture(renderer, ("assets/paly_button/play_button" + std::to_string(i) + ".png").c_str());
+							SDL_Texture* tempTex = IMG_LoadTexture(renderer, ("assets/play_button/play_button" + std::to_string(i) + ".png").c_str());
 							SDL_RenderClear(renderer);
-							SDL_SetTextureScaleMode(tempTex, SDL_SCALEMODE_NEAREST);
+							SDL_SetTextureScaleMode(tempTex, SDL_SCALEMODE_PIXELART);
 							SDL_RenderTexture(renderer, tempTex, nullptr, nullptr);
 							SDL_RenderPresent(renderer);
 							SDL_DestroyTexture(tempTex);
 							SDL_Delay(100);
-						}
+						}// after animation load main menu 
+						
+						BigYahulTex = IMG_LoadTexture(renderer, "assets/images/BigYahul.png");
+
 					}
 				}
 			}
@@ -109,10 +118,9 @@ void Game::handleEvents()
 void Game::update()
 { 
 	{
-		//delta time for animations to look same on different hardware;
-		Uint64 currentTime = SDL_GetTicks();
-		deltaTime = (currentTime - lastTime) / 1000.0f;
-		if (deltaTime > 0.1f) deltaTime = 0.1f;
+		//delta time;
+		Uint64 currentTime = SDL_GetTicksNS();
+		deltaTime = (currentTime - lastTime) / 1000000000.0f;
 		lastTime = currentTime;
 	}
 	{
@@ -123,33 +131,38 @@ void Game::update()
 			previousStars = stars;
 		}
 	}
-		
 }
 
 void Game::render()
 {
 	SDL_RenderClear(renderer);
-	//atuff to render:
+	
+	//stuff to render:
 	int width, height;
 	SDL_GetRenderOutputSize(renderer, &width, &height);
+	{//fps counter
+		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+		SDL_RenderDebugTextFormat(renderer, 50, 10, "FPS: %.2f", 1.0f / deltaTime);
+		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+	}
 	
-	//{// Generetaning main clicking texture and rendering it to the center of the screen
-	//	float MainClickerTexW, MainClickerTexH;
-	//	SDL_GetTextureSize(BigYahulTex, &MainClickerTexW, &MainClickerTexH);
-	//	float aspectRatio = MainClickerTexW / MainClickerTexH;
 
-	//	MainClicker.w = width / 4;
-	//	MainClicker.h = MainClicker.w / aspectRatio;
-	//	if (MainClicker.h > height) {
-	//		MainClicker.h = height;
-	//		MainClicker.w = MainClicker.h * aspectRatio;
-	//	}
-	//	MainClicker.x = (width - MainClicker.w) / 2;
-	//	MainClicker.y = (height - MainClicker.h) / 2;
-	//	SDL_RenderTexture(renderer, BigYahulTex, nullptr, &MainClicker);
-	//}
+	{// Generetaning main clicking texture and rendering it to the center of the screen
+		float MainClickerTexW, MainClickerTexH;
+		SDL_GetTextureSize(BigYahulTex, &MainClickerTexW, &MainClickerTexH);
+		float aspectRatio = MainClickerTexW / MainClickerTexH;
+
+		MainClicker.w = width / 4;
+		MainClicker.h = MainClicker.w / aspectRatio;
+		if (MainClicker.h > height) {
+			MainClicker.h = height;
+			MainClicker.w = MainClicker.h * aspectRatio;
+		}
+		MainClicker.x = (width - MainClicker.w) / 2;
+		MainClicker.y = (height - MainClicker.h) / 2;
+		SDL_RenderTexture(renderer, BigYahulTex, nullptr, &MainClicker);
+	}
 	{ // play button
-		
 		float PlayButtonTexW, PlayButtonTexH;
 		SDL_GetTextureSize(PlayButtonTex, &PlayButtonTexW, &PlayButtonTexH);
 		float aspectRatio = PlayButtonTexW / PlayButtonTexH;
@@ -161,7 +174,7 @@ void Game::render()
 		}
 		PlayButtonRect.x = (width - PlayButtonRect.w) / 2;
 		PlayButtonRect.y = (height - PlayButtonRect.h) / 2;
-		SDL_SetTextureScaleMode(PlayButtonTex, SDL_SCALEMODE_NEAREST);
+		SDL_SetTextureScaleMode(PlayButtonTex, SDL_SCALEMODE_PIXELART);
 		SDL_RenderTexture(renderer, PlayButtonTex, nullptr, &PlayButtonRect);
 	}
 

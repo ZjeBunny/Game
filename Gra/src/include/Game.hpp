@@ -14,8 +14,7 @@
 class Game {
 	public:
 		Game();
-		~Game();
-
+		
 		void init(const char* title, int width, int height, bool fullscreen, bool maximizeWindow);
 		void handleEvents();
 		void update();
@@ -23,6 +22,8 @@ class Game {
 		void clean();
 
 		bool running() { return isRunning; }
+
+		unsigned long long previousStars = 0;
 	private:
 		bool isRunning;
 		bool isFullscreen;
@@ -32,4 +33,5 @@ class Game {
 		float deltaTime = 0.0f;
 		TTF_Font *font = nullptr;
 		SDL_FRect MainClicker;
+		SDL_FRect PlayButtonRect;
 	};

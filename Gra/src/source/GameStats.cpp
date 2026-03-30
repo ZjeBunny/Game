@@ -5,10 +5,6 @@ GameStats::GameStats() : stars(0)
 {
 }
 
-GameStats::~GameStats()
-{
-}
-
 void GameStats::GameLoadStats() {
 
 }

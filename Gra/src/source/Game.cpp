@@ -1,11 +1,9 @@
 #include "../include/Game.hpp"
-#include "../include/GameStats.hpp"
 #include<string>
 
 std::unique_ptr<GameSave> GState = std::make_unique<GameSave>();
-const char* DBPath = ".src/save/GameSave.db";
-std::unique_ptr<GameStats> GStats = std::make_unique<GameStats>();
-SDL_Texture* BigYahulTex = nullptr;
+//const char* DBPath = ".src/save/GameSave.db";
+SDL_Texture* MainClickerTex = nullptr;
 SDL_Texture* PlayButtonTex = nullptr;
 
 Game::Game() : isRunning(false), window(nullptr), renderer(nullptr), 
@@ -40,16 +38,17 @@ void Game::init(const char* title, int width, int height, bool fullscreen, bool 
 			SDL_SetWindowMinimumSize(window, 1200, 900);
 		isRunning = true;
 		}
-		GState->createDB(DBPath);
+		/*GState->createDB(DBPath);
 		GState->createTableSaves(DBPath);
 		GState->createTableUpgrades(DBPath);
 		GState->createSettingsTable(DBPath);
-		GState->createSaveFile(DBPath, "Game Save");
+		GState->createSaveFile(DBPath, "Game Save");*/
 
 		SDL_Surface* IconSurface = IMG_Load("assets/images/BigYahul.png");
 		SDL_SetWindowIcon(window, IconSurface);
 		SDL_DestroySurface(IconSurface);
 		PlayButtonTex = IMG_LoadTexture(renderer, "assets/play_button/play_button1.png");
+		
 	}
 
 }
@@ -72,7 +71,6 @@ void Game::handleEvents()
 						event.button.y >= MainClicker.y &&
 						event.button.y <= MainClicker.y + MainClicker.h) {
 						LOG("Main Clicker clicked!");
-						GStats->GameIcremeantStars();
 					}
 				}
 				{//play button click
@@ -93,7 +91,7 @@ void Game::handleEvents()
 							SDL_Delay(100);
 						}// after animation load main menu 
 						
-						BigYahulTex = IMG_LoadTexture(renderer, "assets/images/BigYahul.png");
+						MainClickerTex = IMG_LoadTexture(renderer, "assets/main_clicker/main_clicker.png");
 
 					}
 				}
@@ -134,11 +132,7 @@ void Game::update()
 	}
 	{
 		//stars counter update
-		unsigned long long stars = GStats->GetStars();
-		if (stars != previousStars) {
-			LOG("Stars: " << stars);
-			previousStars = stars;
-		}
+
 	}
 }
 
@@ -158,7 +152,7 @@ void Game::render()
 
 	{// Generetaning main clicking texture and rendering it to the center of the screen
 		float MainClickerTexW, MainClickerTexH;
-		SDL_GetTextureSize(BigYahulTex, &MainClickerTexW, &MainClickerTexH);
+		SDL_GetTextureSize(MainClickerTex, &MainClickerTexW, &MainClickerTexH);
 		float aspectRatio = MainClickerTexW / MainClickerTexH;
 
 		MainClicker.w = width / 4;
@@ -169,7 +163,8 @@ void Game::render()
 		}
 		MainClicker.x = (width - MainClicker.w) / 2;
 		MainClicker.y = (height - MainClicker.h) / 2;
-		SDL_RenderTexture(renderer, BigYahulTex, nullptr, &MainClicker);
+		SDL_SetTextureScaleMode(MainClickerTex, SDL_SCALEMODE_PIXELART);
+		SDL_RenderTexture(renderer, MainClickerTex, nullptr, &MainClicker);
 	}
 	{ // play button
 		float PlayButtonTexW, PlayButtonTexH;
@@ -192,7 +187,7 @@ void Game::render()
 
 void Game::clean()
 {
-	SDL_DestroyTexture(BigYahulTex);
+	SDL_DestroyTexture(MainClickerTex);
 	SDL_DestroyRenderer(renderer);
 	TTF_Quit();
 	SDL_DestroyWindow(window);

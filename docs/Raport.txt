@@ -1,0 +1,58 @@
+1. Struktura bazy danych
+
+W projekcie zastosowano kilka tabel, które odpowiadają różnym elementom aplikacji:
+
+Tabela gracza (player / saves)
+
+Zawiera podstawowe informacje o użytkowniku:
+
+identyfikator,
+nazwa,
+liczba punktów.
+Tabela ulepszeń (upgrades)
+
+Przechowuje dane dotyczące rozwoju gracza:
+
+nazwa ulepszenia,
+poziom,
+powiązanie z konkretnym graczem.
+
+Tabela ta jest połączona z tabelą gracza za pomocą relacji (klucza obcego), co pozwala przypisać wiele ulepszeń do jednego zapisu gry.
+
+Tabela statystyk (stats)
+
+Może przechowywać dodatkowe informacje, takie jak:
+
+liczba kliknięć,
+czas gry,
+inne osiągnięcia.
+
+Tabela ustawień (settings)
+
+Zawiera konfigurację aplikacji, np.:
+
+rozdzielczość,
+poziom dźwięku,
+tryb pełnoekranowy,
+wyświetlanie licznika FPS.
+
+2. Zapis danych
+
+Zapis danych polega na dodawaniu lub aktualizowaniu informacji w bazie danych. W praktyce oznacza to:
+
+tworzenie nowych zapisów gry,
+aktualizowanie liczby punktów,
+zapisywanie postępu gracza.
+
+Dzięki temu użytkownik może kontynuować grę od momentu, w którym ją zakończył.
+
+
+3. Odczyt danych
+
+Odczyt danych umożliwia przywrócenie stanu gry. System pobiera:
+
+dane gracza,
+jego aktualne punkty,
+listę ulepszeń.
+
+Dane te są następnie wykorzystywane do odtworzenia stanu aplikacji.

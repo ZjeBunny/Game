@@ -1,6 +1,8 @@
 #include "../include/Game.hpp"
 #include "../include/GameStats.hpp"
 #include<string>
+
+std::unique_ptr<GameSave> GState = std::make_unique<GameSave>();
 std::unique_ptr<GameStats> GStats = std::make_unique<GameStats>();
 SDL_Texture* BigYahulTex = nullptr;
 SDL_Texture* PlayButtonTex = nullptr;
@@ -37,6 +39,8 @@ void Game::init(const char* title, int width, int height, bool fullscreen, bool 
 			SDL_SetWindowMinimumSize(window, 1200, 900);
 		isRunning = true;
 		}
+		GState->createDB("./src/save/GameSave.db");
+
 		SDL_Surface* IconSurface = IMG_Load("assets/images/BigYahul.png");
 		SDL_SetWindowIcon(window, IconSurface);
 		SDL_DestroySurface(IconSurface);

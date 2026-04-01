@@ -4,6 +4,7 @@
 #include <iostream>
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include "GameSave.hpp"
 
 #ifdef G_DEBUG
 #define LOG(arg) std::cout <<arg<<"\n"

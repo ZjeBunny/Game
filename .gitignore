@@ -18,6 +18,7 @@ cmake_install.cmake
 *.o
 *.pdb
 *.ilk
+*.db
 
 # VS project files (opcjonalnie)
 *.sln

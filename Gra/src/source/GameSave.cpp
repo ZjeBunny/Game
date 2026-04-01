@@ -1,41 +1,21 @@
-﻿#include <iostream>
-#include <stdio.h>
-#include <sqlite3.h>
-#include <vector>
-#include "database.h"
-
-class GameSave
-{
-public:
-    bool load(const char* s, int saveId);
-    void print() const;
-
-private:
-    std::string name;
-    int stars = 0;
-
-    std::vector<std::pair<std::string, int>> upgrades;
-};
-
+﻿
+#include "../include/GameSave.hpp"
 
 using namespace std;
-
-int GameSave()
+GameSave::GameSave()
 {
-    game = save;
     
 }
 
-static int callback(void* unused, int argc, char** argv, char** ColName)
+void GameSave::callback(void* unused, int argc, char** argv, char** ColName)
 {
     for (int i = 0; i < argc; i++)
     {
         cout << ColName[i] << ":" << argv[i] << endl;
     }
-    return 0;
 }
 
-static int createDB(const char* s) 
+void GameSave::createDB(const char* s) 
 {
     sqlite3* DB;
     int exit = 0;
@@ -43,12 +23,8 @@ static int createDB(const char* s)
     exit = sqlite3_open(s, &DB);
 
     sqlite3_close(DB);
-
-    return 0;
-
 }
-
-static int createTableSaves(const char* s)
+void GameSave::createTableSaves(const char* s)
 {
     sqlite3* DB;
 
@@ -80,10 +56,9 @@ static int createTableSaves(const char* s)
     {
         cerr << error.what() << endl;
     }
-    return 0;
 }
 
-static int createTableUpgrades(const char* s)
+void GameSave::createTableUpgrades(const char* s)
 {
     sqlite3* DB;
 
@@ -118,10 +93,9 @@ static int createTableUpgrades(const char* s)
     {
         cerr << error.what() << endl;
     }
-    return 0;
 }
 
-static int createSettingsTable(const char* s)
+void GameSave::createSettingsTable(const char* s)
 {
     sqlite3* DB;
 
@@ -155,10 +129,9 @@ static int createSettingsTable(const char* s)
     {
         cerr << error.what() << endl;
     }
-    return 0;
 }
 
-static int createSaveFile(const char* s, char* name)
+void GameSave::createSaveFile(const char* s, char* name)
 {
     sqlite3* DB;
     char* messageError;
@@ -179,10 +152,8 @@ static int createSaveFile(const char* s, char* name)
         cout << "Inserted data" << endl;
     }
 
-    return 0;
 }
-
-static int updateSettings(const char* s, const char* res, bool fullscreen, int vol, int music, bool fps_counter)
+void GameSave::updateSettings(const char* s, const char* res, bool fullscreen, int vol, int music, bool fps_counter)
 {
     sqlite3* DB;
     char* messageError;
@@ -200,7 +171,6 @@ static int updateSettings(const char* s, const char* res, bool fullscreen, int v
         std::cerr << "Prepare failed" << endl;
         sqlite3_close(DB);
 
-        return 0;
     }
 
     sqlite3_bind_text(stmt, 1, res, -1, SQLITE_STATIC);
@@ -215,14 +185,11 @@ static int updateSettings(const char* s, const char* res, bool fullscreen, int v
         std::cerr << "Execution failed" << endl;
         sqlite3_finalize(stmt);
         sqlite3_close(DB);
-        return 0;
 
     }
 
     sqlite3_finalize(stmt);
     sqlite3_close(DB);
-
-    return 0;
 }
 
 bool GameSave::load(const char* s, int saveId)

@@ -17,10 +17,11 @@ public:
     void createTableSaves(const char* s);
     void createTableUpgrades(const char* s);
     void createSettingsTable(const char* s);
-    void createSaveFile(const char* s, char* name);
+    void createSaveFile(const char* s, const char* name);
     void updateSettings(const char* s, const char* res, bool fullscreen, int vol, int music, bool fps_counter);
 
 private:
+	
     std::string name;
     int stars = 0;
 

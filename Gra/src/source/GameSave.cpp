@@ -43,7 +43,7 @@ void GameSave::createTableSaves(const char* s)
 
         if (exit != SQLITE_OK) 
         {
-            cerr << "Error creating table" << endl;
+            cerr << "Error creating table 1" << endl;
             sqlite3_free(messageError);
         }
         else
@@ -80,7 +80,7 @@ void GameSave::createTableUpgrades(const char* s)
 
         if (exit != SQLITE_OK)
         {
-            cerr << "Error creating table" << endl;
+            cerr << "Error creating table 2" << endl;
             sqlite3_free(messageError);
         }
         else
@@ -116,8 +116,8 @@ void GameSave::createSettingsTable(const char* s)
 
         if (exit != SQLITE_OK)
         {
-            cerr << "Error creating table" << endl;
-            sqlite3_free(messageError);
+            cerr << "Error creating table 3" << endl;
+            sqlite3_free(messageError); 
         }
         else
         {
@@ -131,7 +131,7 @@ void GameSave::createSettingsTable(const char* s)
     }
 }
 
-void GameSave::createSaveFile(const char* s, char* name)
+void GameSave::createSaveFile(const char* s,const char* name)
 {
     sqlite3* DB;
     char* messageError;

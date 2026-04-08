@@ -1,0 +1,5 @@
+Raport tydzień 3: funkcje zapisywania, tabela upgrades, grafiki.
+1. dodanie funkcji zapisywanie dla wszystkich tablic, które jej wcześniej nie miały
+2. stworzenie tabeli upgrades i funkcji zapisywania do niej używająć struct
+3. dodanie grafik
+4. funkcja wyświetlania gwiazdek

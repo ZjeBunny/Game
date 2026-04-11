@@ -17,7 +17,7 @@ void GameSave::callback(void* unused, int argc, char** argv, char** ColName)
 
 void GameSave::createDB(const char* s) 
 {
-    sqlite3* DB;
+    
     int exit = 0;
 
     exit = sqlite3_open(s, &DB);
@@ -26,12 +26,12 @@ void GameSave::createDB(const char* s)
 }
 void GameSave::createTableSaves(const char* s)
 {
-    sqlite3* DB;
+    
 
     string sql("CREATE TABLE IF NOT EXISTS saves("
         "id     INTEGER PRIMARY KEY AUTOINCREMENT,"
         "name   VARCHAR(255) NOT NULL,"
-        "stars  INTEGER NOT NULL"
+        "stars  INTEGER NOT NULL DEFAULT 0"
         ");");
     try
     {
@@ -60,7 +60,7 @@ void GameSave::createTableSaves(const char* s)
 
 void GameSave::createTableUpgrades(const char* s)
 {
-    sqlite3* DB;
+    
 
     string sql("CREATE TABLE IF NOT EXISTS upgrades("
         "id     INTEGER PRIMARY KEY AUTOINCREMENT,"
@@ -97,7 +97,7 @@ void GameSave::createTableUpgrades(const char* s)
 
 void GameSave::createSettingsTable(const char* s)
 {
-    sqlite3* DB;
+    
 
     string sql("CREATE TABLE IF NOT EXISTS settings("
         "resolution     VARCHAR(50) NOT NULL DEFAULT '1600x900',"
@@ -133,8 +133,7 @@ void GameSave::createSettingsTable(const char* s)
 
 void GameSave::createSaveFile(const char* s,const char* name)
 {
-    sqlite3* DB;
-    char* messageError;
+    char* messageError = nullptr;
 
     int exit = sqlite3_open(s, &DB);
 
@@ -155,8 +154,7 @@ void GameSave::createSaveFile(const char* s,const char* name)
 }
 void GameSave::updateSettings(const char* s, const char* res, bool fullscreen, int vol, int music, bool fps_counter)
 {
-    sqlite3* DB;
-    char* messageError;
+    
 
     int exit = sqlite3_open(s, &DB);
 
@@ -194,7 +192,7 @@ void GameSave::updateSettings(const char* s, const char* res, bool fullscreen, i
 
 bool GameSave::load(const char* s, int saveId)
 {
-    sqlite3* DB;
+    
     sqlite3_stmt* stmt;
 
     upgrades.clear();

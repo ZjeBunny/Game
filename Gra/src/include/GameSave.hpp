@@ -1,10 +1,9 @@
-#ifndef DATABASE_H
-#define DATABASE_H
+#pragma once
 
 #include <string>
 #include <vector>
 #include <iostream>
-#include "../lib/sqlite3.h"
+#include <sqlite3.h>
 
 class GameSave
 {
@@ -21,13 +20,11 @@ public:
     void updateSettings(const char* s, const char* res, bool fullscreen, int vol, int music, bool fps_counter);
 
 private:
-	
+    sqlite3* DB = nullptr;
+    
+
     std::string name;
     int stars = 0;
 
     std::vector<std::pair<std::string, int>> upgrades;
 };
-
-
-
-#endif

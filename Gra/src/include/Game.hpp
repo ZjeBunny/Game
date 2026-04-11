@@ -5,7 +5,8 @@
 #include <SDL3_image/SDL_image.h>
 #include <SDL3_ttf/SDL_ttf.h>
 #include "GameSave.hpp"
-
+#include "ui/GameMenu.hpp"
+#include "GameStateEnum.hpp"
 #ifdef G_DEBUG
 #define LOG(arg) std::cout <<arg<<"\n"
 #else
@@ -26,14 +27,18 @@ class Game
 		bool running() { return isRunning; }
 
 		unsigned long long previousStars = 0;
+		int windowHeight;
+		int windowWidth;
 	private:
+		GameState currentState = GameState::START_SCREEN;
 		bool isRunning;
 		bool isFullscreen;
+		bool fpsCounter;
 		SDL_Window *window;
 		SDL_Renderer *renderer;
 		Uint64 lastTime = 0;
 		float deltaTime = 0.0f;
+		
 		TTF_Font *font = nullptr;
-		SDL_FRect MainClicker;
 		SDL_FRect PlayButtonRect;
 };

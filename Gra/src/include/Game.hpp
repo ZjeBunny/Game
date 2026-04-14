@@ -7,6 +7,7 @@
 #include "GameSave.hpp"
 #include "ui/GameMenu.hpp"
 #include "GameStateEnum.hpp"
+#include "ui/GameMain.hpp"
 #ifdef G_DEBUG
 #define LOG(arg) std::cout <<arg<<"\n"
 #else
@@ -41,4 +42,6 @@ class Game
 		
 		TTF_Font *font = nullptr;
 		SDL_FRect PlayButtonRect;
+		SDL_Cursor* cursorPointer = nullptr;
+		SDL_Cursor* cursorDefault = nullptr;
 };

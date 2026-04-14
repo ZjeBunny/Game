@@ -7,9 +7,9 @@ public:
 	void LoadMenuAssets(SDL_Renderer* renderer, int windowW, int windowH);
 	void RenderMenu(SDL_Renderer* renderer);
 	void UpdateLayout(int winW, int winH);
-	void HandleMenuEvents(SDL_Event& event, bool& isRunning, GameState& currentState);
+	void HandleMenuEvents(SDL_Event& event, bool& isRunning, GameState& currentState, SDL_Renderer* renderer);
 	void CleanMenu();
-	
+	inline void RunAnimation(SDL_Renderer* renderer, SDL_Texture*& TexName, const std::string& TexPath, int AmmountOfFrames, int delayMS);
 	
 private:
 	SDL_Texture* MenuBackgroundTex = nullptr;
@@ -21,8 +21,8 @@ private:
 	SDL_Texture* NewGameButtonTex = nullptr;
 	SDL_FRect NewGameButtonRect;
 
-	SDL_Texture* PlayButtonTex = nullptr;
-	SDL_FRect PlayButtonRect;
+	SDL_Texture* ContinueButtonTex = nullptr;
+	SDL_FRect ContinueButtonRect;
 
 	SDL_Texture* SettingsButtonTex = nullptr;
 	SDL_FRect SettingsButtonRect;
@@ -30,4 +30,7 @@ private:
 
 	SDL_Texture* ExitButtonTex = nullptr;
 	SDL_FRect ExitButtonRect;
+
+	SDL_Cursor* cursorPointer = nullptr;
+	SDL_Cursor* cursorDefault = nullptr;
 };

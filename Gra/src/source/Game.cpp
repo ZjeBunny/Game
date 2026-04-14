@@ -1,10 +1,9 @@
 #include "../include/Game.hpp"
 #include<string>
-
-std::unique_ptr<GameSave> gameState = std::make_unique<GameSave>();
 const char* DBPath = "./src/save/GameSave.db";
 SDL_Texture* PlayButtonTex = nullptr;
 std::unique_ptr<Menu> gameMenu = std::make_unique<Menu>();
+std::unique_ptr<Main> gameMain = std::make_unique<Main>();
 
 
 Game::Game() : isRunning(false), window(nullptr), renderer(nullptr), 
@@ -16,8 +15,6 @@ PlayButtonRect{ 0, 0, 0, 0 }, currentState(GameState::START_SCREEN)
 
 void Game::init(const char* title, int width, int height, bool fullscreen, bool maximizeWindow)
 {	
-	windowWidth = width;
-	windowHeight = height;
 	isFullscreen = fullscreen;
 	int flags = SDL_WINDOW_RESIZABLE;
 	if (fullscreen) {
@@ -28,9 +25,12 @@ void Game::init(const char* title, int width, int height, bool fullscreen, bool 
 		LOG("Subsystems Initialized!...");
 		
 		window = SDL_CreateWindow(title, width, height, flags);
+		
 		if (!isFullscreen && maximizeWindow) SDL_MaximizeWindow(window);
 		if(window) {
 			LOG("Window created!");
+			SDL_GetWindowSize(window, &windowWidth, &windowHeight);
+			SDL_WarpMouseInWindow(window, windowWidth / 2.0f, windowHeight / 2.0f);
 			renderer = SDL_CreateRenderer(window, nullptr);
 			if (renderer) {
 				SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
@@ -43,16 +43,13 @@ void Game::init(const char* title, int width, int height, bool fullscreen, bool 
 			SDL_SetWindowMinimumSize(window, 1200, 900);
 		isRunning = true;
 		}
-		gameState->createDB(DBPath);
-		gameState->createTableSaves(DBPath);
-		gameState->createTableUpgrades(DBPath);
-		gameState->createSettingsTable(DBPath);
-		gameState->createSaveFile(DBPath, "Game Save");
-
 		SDL_Surface* IconSurface = IMG_Load("assets/images/BigYahul.png");
 		SDL_SetWindowIcon(window, IconSurface);
 		SDL_DestroySurface(IconSurface);
+		
 		PlayButtonTex = IMG_LoadTexture(renderer, "assets/play_button/play_button1.png");
+		cursorPointer = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_POINTER);
+		cursorDefault = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_DEFAULT);
 	}
 
 }
@@ -69,6 +66,15 @@ void Game::handleEvents()
 
 		switch (currentState) {
 		case GameState::START_SCREEN:
+			if (event.type == SDL_EVENT_MOUSE_MOTION) {
+				SDL_FPoint mousePos = { event.motion.x, event.motion.y };
+				if(SDL_PointInRectFloat(&mousePos, &PlayButtonRect)) {
+					SDL_SetCursor(cursorPointer);
+				}
+				else {
+					SDL_SetCursor(cursorDefault);
+				}
+			}
 			if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
 				if (event.button.button == SDL_BUTTON_LEFT) {
 					float mouseX = event.button.x;
@@ -76,7 +82,7 @@ void Game::handleEvents()
 
 					if (mouseX >= PlayButtonRect.x && mouseX <= PlayButtonRect.x + PlayButtonRect.w &&
 						mouseY >= PlayButtonRect.y && mouseY <= PlayButtonRect.y + PlayButtonRect.h) {
-
+						SDL_SetCursor(cursorDefault);
 						LOG("Play Button clicked!");
 
 						// Animacja
@@ -101,15 +107,30 @@ void Game::handleEvents()
 			break;
 
 		case GameState::MENU:
-			gameMenu->HandleMenuEvents(event, isRunning, currentState);
+		{
+			GameState oldState = currentState;
+			gameMenu->HandleMenuEvents(event, isRunning, currentState, renderer);
+			if (oldState == GameState::MENU && currentState == GameState::PLAYING) {
+				gameMenu->CleanMenu();
+				gameMain->LoadMainAssets(renderer, windowWidth, windowHeight);
+			}
 			break;
 		}
+		case GameState::PLAYING:
+			gameMain->HandleMainEvents(event, isRunning, currentState, renderer);
+			break;
+		}
+		
 
 		if (event.type == SDL_EVENT_KEY_DOWN) {
 			if (event.key.key == SDLK_F11) {
 				isFullscreen = !isFullscreen;
 				SDL_SetWindowFullscreen(window, isFullscreen ? SDL_WINDOW_FULLSCREEN : 0);
 				if (!isFullscreen) SDL_MaximizeWindow(window);
+				int w, h;
+				SDL_GetWindowSize(window, &w, &h);
+				gameMenu->UpdateLayout(w, h);
+				gameMain->UpdateLayout(w, h);
 			}
 		}
 	}
@@ -162,13 +183,28 @@ void Game::render()
 				PlayButtonRect.y = (windowHeight - PlayButtonRect.h) / 2.0f;
 				SDL_SetTextureScaleMode(PlayButtonTex, SDL_SCALEMODE_PIXELART);
 				SDL_RenderTexture(renderer, PlayButtonTex, nullptr, &PlayButtonRect);
+
+				SDL_Surface* textStart = TTF_RenderText_Solid(font, "Click to Start!", 0, { 255, 255, 255, 255 });
+				if (textStart) {
+					SDL_Texture* textTex = SDL_CreateTextureFromSurface(renderer, textStart);
+
+					SDL_FRect destRect = {
+						(windowWidth - textStart->w) / 2.0f,
+						PlayButtonRect.y - textStart->h - 100,
+						(float)textStart->w,
+						(float)textStart->h
+					};
+					SDL_RenderTexture(renderer, textTex, nullptr, &destRect);
+					SDL_DestroyTexture(textTex);
+					SDL_DestroySurface(textStart);
+				}
 			}
 			break;
 		case GameState::MENU:
 			gameMenu->RenderMenu(renderer);
 			break;
 		case GameState::PLAYING:
-			// Render game elements here
+			gameMain->RenderMain(renderer);
 			break;
 		case GameState::PAUSED:
 			// Render paused screen here
@@ -178,8 +214,6 @@ void Game::render()
 			break;
 		
 	}
-
-
 	SDL_RenderPresent(renderer);
 }
 

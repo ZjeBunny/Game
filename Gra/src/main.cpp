@@ -4,7 +4,7 @@ std::unique_ptr<Game> game = std::make_unique<Game>();
 int main(int argc, char* argv[])
 {
 
-	game->init("Yahul incremental clicker", 1200, 900, false, false);
+	game->init("Yahul incremental clicker", 1200, 900, false, true);
 	
 	while (game->running())
 	{

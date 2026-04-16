@@ -6,8 +6,11 @@
 #include <SDL3_ttf/SDL_ttf.h>
 #include "GameSave.hpp"
 #include "ui/GameMenu.hpp"
+#include "ui/GameSettings.hpp"
 #include "GameStateEnum.hpp"
 #include "ui/GameMain.hpp"
+#include <memory>
+#include "Helpers.hpp"
 #ifdef G_DEBUG
 #define LOG(arg) std::cout <<arg<<"\n"
 #else
@@ -30,6 +33,7 @@ class Game
 		unsigned long long previousStars = 0;
 		int windowHeight;
 		int windowWidth;
+
 	private:
 		GameState currentState = GameState::START_SCREEN;
 		bool isRunning;

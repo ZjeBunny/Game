@@ -16,13 +16,13 @@
 #else
 #define LOG(arg)
 #endif
-
+class SettingsSave;
 class Game 
 {
 	public:
 		Game();
 		
-		void init(const char* title, int width, int height, bool fullscreen, bool maximizeWindow);
+		void init(const char* title, int width, int height, bool fullscreen, bool maximizeWindow, SettingsSave* sManager);
 		void handleEvents();
 		void update();
 		void render();
@@ -35,6 +35,8 @@ class Game
 		int windowWidth;
 
 	private:
+		SettingsSave* settingManager;
+
 		GameState currentState = GameState::START_SCREEN;
 		bool isRunning;
 		bool isFullscreen;

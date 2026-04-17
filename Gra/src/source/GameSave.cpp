@@ -1,260 +1,142 @@
 ﻿
 #include "../include/GameSave.hpp"
-
-using namespace std;
-GameSave::GameSave()
-{
-    
-}
-
-void GameSave::callback(void* unused, int argc, char** argv, char** ColName)
-{
-    for (int i = 0; i < argc; i++)
-    {
-        cout << ColName[i] << ":" << argv[i] << endl;
+#include <iostream>
+void GameSave::CreateGameSave(const char* path) {
+    if (sqlite3_open(path, &DB) != SQLITE_OK) {
+        return;
     }
-}
 
-void GameSave::createDB(const char* s) 
-{
-    
-    int exit = 0;
-
-    exit = sqlite3_open(s, &DB);
-
-    sqlite3_close(DB);
-}
-void GameSave::createTableSaves(const char* s)
-{
-    
-
-    string sql("CREATE TABLE IF NOT EXISTS saves("
+    const char* sql =
+        "CREATE TABLE IF NOT EXISTS saves("
         "id     INTEGER PRIMARY KEY AUTOINCREMENT,"
-        "name   VARCHAR(255) NOT NULL,"
-        "stars  INTEGER NOT NULL DEFAULT 0"
-        ");");
-    try
-    {
-        int exit = 0;
-        exit = sqlite3_open(s, &DB);
-
-        char* messageError;
-        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
-
-        if (exit != SQLITE_OK) 
-        {
-            cerr << "Error creating table 1" << endl;
-            sqlite3_free(messageError);
-        }
-        else
-        {
-               cout << "Table created" << endl;
-               sqlite3_close(DB);
-        }
-    }
-    catch (const exception & error)
-    {
-        cerr << error.what() << endl;
-    }
-}
-
-void GameSave::createTableUpgrades(const char* s)
-{
-    
-
-    string sql("CREATE TABLE IF NOT EXISTS upgrades("
+        "name   TEXT NOT NULL,"
+        "money  DOUBLE NOT NULL DEFAULT 0.0"
+        ");"
+        "CREATE TABLE IF NOT EXISTS upgrades("
         "id     INTEGER PRIMARY KEY AUTOINCREMENT,"
-        "name   VARCHAR(255) NOT NULL,"
+        "name   TEXT NOT NULL,"
         "level  INTEGER NOT NULL DEFAULT 1,"
-        "base_multiplier    INTEGER NOT NULL,"
-        "saves_id   INTEGER NOT NULL,"
-        "FOREIGN KEY(saves_id) REFERENCES saves(id)"
-        ");");
-    try
-    {
-        int exit = 0;
-        exit = sqlite3_open(s, &DB);
+        "max_level INTEGER NOT NULL DEFAULT 10,"
+        "base_multiplier DOUBLE NOT NULL,"
+        "texture VARCHAR(255),"                  
+        "saves_id INTEGER NOT NULL,"
+        "FOREIGN KEY(saves_id) REFERENCES saves(id),"
+        "UNIQUE(name, saves_id)"
+        ");";
 
-        char* messageError;
-        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
-
-        if (exit != SQLITE_OK)
-        {
-            cerr << "Error creating table 2" << endl;
-            sqlite3_free(messageError);
-        }
-        else
-        {
-            cout << "Table created" << endl;
-            sqlite3_close(DB);
-        }
-    }
-    catch (const exception & error)
-    {
-        cerr << error.what() << endl;
+    char* msgErr = nullptr;
+    if (sqlite3_exec(DB, sql, nullptr, 0, &msgErr) != SQLITE_OK) {
+        sqlite3_free(msgErr);
     }
 }
-
-void GameSave::createSettingsTable(const char* s)
+void GameSave::LoadGameSave(int saveId)
 {
+    this->currentSaveId = saveId;
+    this->upgrades.clear();
+
+    const char* sqlSave = "SELECT name, money FROM saves WHERE id = ?;";
+    sqlite3_stmt* stmtSave;
+    bool found = false;
+
+    if (sqlite3_prepare_v2(DB, sqlSave, -1, &stmtSave, nullptr) == SQLITE_OK) {
+        sqlite3_bind_int(stmtSave, 1, saveId);
+        if (sqlite3_step(stmtSave) == SQLITE_ROW) {
+            this->saveName = reinterpret_cast<const char*>(sqlite3_column_text(stmtSave, 0));
+            this->money = sqlite3_column_double(stmtSave, 1);
+            found = true;
+        }
+        sqlite3_finalize(stmtSave);
+    }
+
+    if (!found) {
+        const char* sqlInsert = "INSERT INTO saves (id, name, money) VALUES (?, 'Player', 0.0);";
+        sqlite3_stmt* stmtIns;
+        if (sqlite3_prepare_v2(DB, sqlInsert, -1, &stmtIns, nullptr) == SQLITE_OK) {
+            sqlite3_bind_int(stmtIns, 1, saveId);
+            sqlite3_step(stmtIns);
+            sqlite3_finalize(stmtIns);
+        }
+        this->money = 0.0;
+        this->saveName = "Player";
+    }
     
+    const char* sqlUpgrades = "SELECT id, name, level, max_level, base_multiplier, texture FROM upgrades WHERE saves_id = ?;";
+    sqlite3_stmt* stmtUp;
 
-    string sql("CREATE TABLE IF NOT EXISTS settings("
-        "resolution     VARCHAR(50) NOT NULL DEFAULT '1600x900',"
-        "fullscreen   BOOL NOT NULL DEFAULT true,"
-        "volume     INTEGER NOT NULL DEFAULT 50,"
-        "music      INTEGER NOT NULL DEFAULT 50,"
-        "fps_counter    BOOL NOT NULL DEFAULT false"
-        ");");
-    try
-    {
-        int exit = 0;
-        exit = sqlite3_open(s, &DB);
+    if (sqlite3_prepare_v2(DB, sqlUpgrades, -1, &stmtUp, nullptr) == SQLITE_OK) {
+        sqlite3_bind_int(stmtUp, 1, saveId);
+        while (sqlite3_step(stmtUp) == SQLITE_ROW) {
+            Upgrade up;
+            up.id = sqlite3_column_int(stmtUp, 0);
+            up.name = reinterpret_cast<const char*>(sqlite3_column_text(stmtUp, 1));
+            up.level = sqlite3_column_int(stmtUp, 2);
+            up.maxLevel = sqlite3_column_int(stmtUp, 3);
+            up.base_multiplier = sqlite3_column_int(stmtUp, 4);
+            const char* tex = reinterpret_cast<const char*>(sqlite3_column_text(stmtUp, 5));
+            up.texture = tex ? tex : "";
 
-        char* messageError;
-        exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
-
-        if (exit != SQLITE_OK)
-        {
-            cerr << "Error creating table 3" << endl;
-            sqlite3_free(messageError); 
+            this->upgrades[up.name] = up;
         }
-        else
-        {
-            cout << "Table created" << endl;
-            sqlite3_close(DB);
-        }
+        sqlite3_finalize(stmtUp);
     }
-    catch (const exception& error)
-    {
-        cerr << error.what() << endl;
+}
+void GameSave::SaveGame(const Upgrade& up) {
+    if (!DB || currentSaveId == -1) return;
+    const char* sqlStats = "UPDATE saves SET money = ?, name = ? WHERE id = ?;";
+    sqlite3_stmt* stmtStats;
+    if (sqlite3_prepare_v2(DB, sqlStats, -1, &stmtStats, nullptr) == SQLITE_OK) {
+        sqlite3_bind_double(stmtStats, 1, this->money);
+        sqlite3_bind_text(stmtStats, 2, this->saveName.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmtStats, 3, this->currentSaveId);
+
+        sqlite3_step(stmtStats);
+        sqlite3_finalize(stmtStats);
+    }
+
+    const char* sqlUp =
+        "INSERT OR REPLACE INTO upgrades (name, level, max_level, base_multiplier, texture, saves_id) "
+        "VALUES (?, ?, ?, ?, ?, ?);";
+
+    sqlite3_stmt* stmtUp;
+    if (sqlite3_prepare_v2(DB, sqlUp, -1, &stmtUp, nullptr) == SQLITE_OK) {
+        sqlite3_bind_text(stmtUp, 1, up.name.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmtUp, 2, up.level);
+        sqlite3_bind_int(stmtUp, 3, up.maxLevel);
+        sqlite3_bind_int(stmtUp, 4, up.base_multiplier);
+        sqlite3_bind_text(stmtUp, 5, up.texture.c_str(), -1, SQLITE_TRANSIENT);
+        sqlite3_bind_int(stmtUp, 6, currentSaveId);
+
+        if (sqlite3_step(stmtUp) == SQLITE_DONE) {
+            this->upgrades[up.name] = up;
+        }
+        sqlite3_finalize(stmtUp);
     }
 }
 
-void GameSave::createSaveFile(const char* s,const char* name)
-{
-    char* messageError = nullptr;
+void GameSave::AutoSaveAll(double currentMoney, const std::map<std::string, Upgrade>& currentUpgrades) {
+    if (!DB || currentSaveId == -1) return;
+    sqlite3_exec(DB, "BEGIN TRANSACTION;", nullptr, nullptr, nullptr);
 
-    int exit = sqlite3_open(s, &DB);
-
-    string sql("INSERT INTO saves (name, stars) VALUES('" + string(name) + "', 0);");
-
-    exit = sqlite3_exec(DB, sql.c_str(), NULL, 0, &messageError);
-   
-    if (exit != SQLITE_OK)
-    {
-        cerr << "Error insert" << endl;
-        sqlite3_free(messageError);
-    }
-    else
-    {
-        cout << "Inserted data" << endl;
+    const char* sqlMoney = "UPDATE saves SET money = ? WHERE id = ?;";
+    sqlite3_stmt* stmtM;
+    if (sqlite3_prepare_v2(DB, sqlMoney, -1, &stmtM, nullptr) == SQLITE_OK) {
+        sqlite3_bind_double(stmtM, 1, currentMoney);
+        sqlite3_bind_int(stmtM, 2, currentSaveId);
+        sqlite3_step(stmtM);
+        sqlite3_finalize(stmtM);
     }
 
-}
-void GameSave::updateSettings(const char* s, const char* res, bool fullscreen, int vol, int music, bool fps_counter)
-{
-    
-
-    int exit = sqlite3_open(s, &DB);
-
-    std::string sql =
-        "UPDATE settings "
-        "SET resolution = ?, fullscreen = ?, volume = ?, music = ?, fps_counter = ?;";
-
-    sqlite3_stmt* stmt;
-
-    if (sqlite3_prepare_v2(DB, sql.c_str(), -1, &stmt, NULL) != SQLITE_OK)
-    {
-        std::cerr << "Prepare failed" << endl;
-        sqlite3_close(DB);
-
-    }
-
-    sqlite3_bind_text(stmt, 1, res, -1, SQLITE_STATIC);
-    sqlite3_bind_int(stmt, 2, fullscreen ? 1 : 0);
-    sqlite3_bind_int(stmt, 3, vol);
-    sqlite3_bind_int(stmt, 4, music);
-    sqlite3_bind_int(stmt, 5, fps_counter ? 1 : 0);
-
-
-    if (sqlite3_step(stmt) != SQLITE_DONE)
-    {
-        std::cerr << "Execution failed" << endl;
-        sqlite3_finalize(stmt);
-        sqlite3_close(DB);
-
-    }
-
-    sqlite3_finalize(stmt);
-    sqlite3_close(DB);
-}
-
-bool GameSave::load(const char* s, int saveId)
-{
-    
-    sqlite3_stmt* stmt;
-
-    upgrades.clear();
-
-    int exit = sqlite3_open(s, &DB);
-    if (exit != SQLITE_OK)
-    {
-        std::cerr << "Cannot open DB" << endl;
-        return false;
-    }
-
-    sqlite3_exec(DB, "PRAGMA foreign_keys = ON;", NULL, NULL, NULL);
-
-    std::string sql =
-        "SELECT saves.name, saves.stars, upgrades.name, upgrades.level "
-        "FROM saves "
-        "LEFT JOIN upgrades ON saves.id = upgrades.saves_id "
-        "WHERE saves.id = ?;";
-
-    if (sqlite3_prepare_v2(DB, sql.c_str(), -1, &stmt, NULL) != SQLITE_OK)
-    {
-        std::cerr << "Prepare failed" << endl;
-        sqlite3_close(DB);
-        return false;
-    }
-
-
-    sqlite3_bind_int(stmt, 1, saveId);
-
-    bool initialized = false;
-
-    while (sqlite3_step(stmt) == SQLITE_ROW)
-    {
-
-        const unsigned char* sNameText = sqlite3_column_text(stmt, 0);
-
-        if (!initialized)
-        {
-            name = sNameText ? reinterpret_cast<const char*>(sNameText) : "";
-            stars = sqlite3_column_int(stmt, 1);
-            initialized = true;
+    const char* sqlUp = "UPDATE upgrades SET level = ? WHERE name = ? AND saves_id = ?;";
+    sqlite3_stmt* stmtUp;
+    if (sqlite3_prepare_v2(DB, sqlUp, -1, &stmtUp, nullptr) == SQLITE_OK) {
+        for (auto const& [name, up] : currentUpgrades) {
+            sqlite3_bind_int(stmtUp, 1, up.level);
+            sqlite3_bind_text(stmtUp, 2, name.c_str(), -1, SQLITE_TRANSIENT);
+            sqlite3_bind_int(stmtUp, 3, currentSaveId);
+            sqlite3_step(stmtUp);
+            sqlite3_reset(stmtUp);
         }
-
-        const unsigned char* upNameText = sqlite3_column_text(stmt, 2);
-
-        if (upNameText)
-        {
-            std::string upName = reinterpret_cast<const char*>(upNameText);
-            int upLevel = sqlite3_column_int(stmt, 3);
-
-            upgrades.push_back({ upName, upLevel });
-        }
+        sqlite3_finalize(stmtUp);
     }
-
-    sqlite3_finalize(stmt);
-    sqlite3_close(DB);
-
-    if (!initialized)
-    {
-        std::cerr << "Save ID not found" << endl;
-        return false;
-    }
-
-    return true;
+    sqlite3_exec(DB, "COMMIT;", nullptr, nullptr, nullptr);
 }

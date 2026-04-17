@@ -1,19 +1,22 @@
 #include "../include/Game.hpp"
 #include<string>
-const char* DBPath = "./src/save/GameSave.db";
 SDL_Texture* PlayButtonTex = nullptr;
 std::unique_ptr<Menu> gameMenu = std::make_unique<Menu>();
 std::unique_ptr<Main> gameMain = std::make_unique<Main>();
 std::unique_ptr<GSettings> gameSettings = std::make_unique<GSettings>();
 
 Game::Game() : isRunning(false), window(nullptr), windowHeight(0), windowWidth(0), renderer(nullptr), isFullscreen(false),
-fpsCounter(false), lastTime(0), deltaTime(0.0f), currentState(GameState::START_SCREEN), font(nullptr), PlayButtonRect{ 0, 0, 0, 0 }
+fpsCounter(false), lastTime(0), deltaTime(0.0f), currentState(GameState::START_SCREEN), font(nullptr), PlayButtonRect{ 0, 0, 0, 0 }, settingManager(nullptr)
 {
 }
 
 
-void Game::init(const char* title, int width, int height, bool fullscreen, bool maximizeWindow)
+void Game::init(const char* title, int width, int height, bool fullscreen, bool showFps, SettingsSave* sManager)
 {	
+
+	settingManager = sManager;
+	lastTime = SDL_GetTicksNS();
+	if (showFps)fpsCounter = showFps;
 	isFullscreen = fullscreen;
 	int flags = SDL_WINDOW_RESIZABLE;
 	if (fullscreen) {
@@ -25,7 +28,7 @@ void Game::init(const char* title, int width, int height, bool fullscreen, bool 
 		
 		window = SDL_CreateWindow(title, width, height, flags);
 		
-		if (!isFullscreen && maximizeWindow) SDL_MaximizeWindow(window);
+		if (!isFullscreen) SDL_MaximizeWindow(window);
 		if(window) {
 			LOG("Window created!");
 			SDL_GetWindowSize(window, &windowWidth, &windowHeight);
@@ -60,6 +63,7 @@ void Game::handleEvents()
 	while (SDL_PollEvent(&event)) {
 
 		if (event.type == SDL_EVENT_QUIT) {
+			
 			isRunning = false;
 			return;
 		}
@@ -111,7 +115,7 @@ void Game::handleEvents()
 			GameState stateBefore = currentState;
 			gameMenu->HandleMenuEvents(event, isRunning, currentState, renderer);
 			if (stateBefore == GameState::MENU && currentState == GameState::SETTINGS) {
-				gameSettings->LoadSettingsAssets(renderer, windowWidth, windowHeight);
+				gameSettings->LoadSettingsAssets(renderer, windowWidth, windowHeight, settingManager);
 			}
 			else if (stateBefore == GameState::MENU && currentState == GameState::PLAYING) {
 				gameMenu->CleanMenu();
@@ -123,7 +127,7 @@ void Game::handleEvents()
 			gameMain->HandleMainEvents(event, isRunning, currentState, renderer);
 			break;
 		case GameState::SETTINGS:
-			gameSettings->HandleSettingsEvents(event, isRunning, currentState, renderer);
+			gameSettings->HandleSettingsEvents(event, isRunning, currentState, renderer, settingManager, window);
 			break;
 		}
 		
@@ -188,7 +192,7 @@ void Game::render()
 	// FPS Counter
 	if (fpsCounter) {
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		SDL_RenderDebugTextFormat(renderer, 50, 10, "FPS: %.2f", 1.0f / deltaTime);
+		SDL_RenderDebugTextFormat(renderer, 50, 10, "FPS: %.2f", deltaTime);
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
 	}
 	

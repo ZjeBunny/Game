@@ -3,7 +3,9 @@
 #include "../Game.hpp"
 #include "../Helpers.hpp"
 #include <string>
-
+#include <map>
+#include "../Upgrade.hpp"
+#include "../GameSave.hpp"
 class Main {
 public:
     
@@ -49,4 +51,11 @@ private:
     double money = 0.0;
     std::string moneyText;
     SDL_FRect Frame1, Frame2, Frame3;
+
+    void InitUpgrades();
+    std::map<std::string, Upgrade> upgrades;
+    GameSave saveSystem;
+
+    Uint64 lastSaveTime = 0;
+    const Uint32 SAVE_INTERVAL = 10000; // 10s
 };

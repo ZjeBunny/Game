@@ -1,30 +1,33 @@
 #pragma once
-
 #include <string>
 #include <vector>
-#include <iostream>
 #include <sqlite3.h>
-
-class GameSave
-{
+#include <map>
+struct Upgrade {
+    int id;
+    std::string name;
+    int level;
+    int maxLevel;      
+    double base_multiplier;
+    std::string texture; 
+};
+class GameSave {
 public:
-	GameSave();
-    bool load(const char* s, int saveId);
-    void print() const;
-	void callback(void* unused, int argc, char** argv, char** ColName);
-    void createDB(const char* s);
-    void createTableSaves(const char* s);
-    void createTableUpgrades(const char* s);
-    void createSettingsTable(const char* s);
-    void createSaveFile(const char* s, const char* name);
-    void updateSettings(const char* s, const char* res, bool fullscreen, int vol, int music, bool fps_counter);
+    ~GameSave() { if (DB) sqlite3_close(DB); }
+
+    void CreateGameSave(const char* path);
+    void LoadGameSave(int saveId);
+    void SaveGame(const Upgrade& up);
+    void AutoSaveAll(double currentMoney, const std::map<std::string, Upgrade>& currentUpgrades);
+    std::map<std::string, Upgrade>& GetUpgrades() { return upgrades; }
+    double GetMoney() const { return money; };
 
 private:
     sqlite3* DB = nullptr;
-    
+    int currentSaveId = -1;
 
-    std::string name;
-    int stars = 0;
+    double money = 0.0;
+    std::string saveName;
 
-    std::vector<std::pair<std::string, int>> upgrades;
+    std::map<std::string, Upgrade> upgrades;
 };

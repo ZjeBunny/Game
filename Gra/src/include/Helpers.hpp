@@ -52,4 +52,19 @@ public:
         }
         return { displayX, (float)windowH * yPosPercentage, displayW, displayH };
     }
+    static inline void HoverEffect(SDL_FRect* currentRect, const SDL_FRect& baseRect, const SDL_FPoint& mousePos) {
+        if (SDL_PointInRectFloat(&mousePos, &baseRect)) {
+            currentRect->w = baseRect.w * 1.1f;
+            currentRect->h = baseRect.h * 1.1f;
+            currentRect->x = baseRect.x - (currentRect->w - baseRect.w) / 2.0f;
+            currentRect->y = baseRect.y - (currentRect->h - baseRect.h) / 2.0f;
+        }
+        else {
+            *currentRect = baseRect;
+        }
+    }
+    static inline bool ResetSave(const std::string& path) {
+        return std::filesystem::remove(path);
+    }
 };
+

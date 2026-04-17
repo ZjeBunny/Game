@@ -1,7 +1,8 @@
 ﻿#include "../../Include/ui/GameSettings.hpp"
 #include "../../include/Helpers.hpp"
-
-void GSettings::LoadSettingsAssets(SDL_Renderer* renderer, int windowW, int windowH) {
+#include "../../include/SettingsManager.hpp"
+void GSettings::LoadSettingsAssets(SDL_Renderer* renderer, int windowW, int windowH, SettingsSave* settingManager) {
+	this->sManager = settingManager;
 	cursorPointer = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_POINTER);
 	cursorMove = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_EW_RESIZE);
 	font = TTF_OpenFont("assets/fonts/ThaleahFat.ttf", 48.0f);
@@ -25,6 +26,13 @@ void GSettings::LoadSettingsAssets(SDL_Renderer* renderer, int windowW, int wind
 	SDL_DestroySurface(settingsSur);
 	SDL_DestroySurface(volumeSur);
 	SDL_DestroySurface(musicSur);
+
+	Config conf = sManager->GetConfig();
+	fullCheckbox.setChecked(conf.isFullscreen);
+	fpsCheckbox.setChecked(conf.showFps);
+
+	volumeSlider.setValue(conf.soundVolume);
+	volumeSlider.setValue(conf.musicVolume);
 
 	UpdateLayout(windowW, windowH);
 }
@@ -99,7 +107,9 @@ void GSettings::UpdateLayout(int winW, int winH) {
 
 }
 
-void GSettings::HandleSettingsEvents(SDL_Event& event, bool& isRunning, GameState& currentState, SDL_Renderer* renderer) {
+void GSettings::HandleSettingsEvents(SDL_Event& event, bool& isRunning, GameState& currentState, SDL_Renderer* renderer, SettingsSave* sManager, SDL_Window* window) {
+	Config conf = sManager->GetConfig();
+
 	volumeSlider.HandleSliderEvent(event);
 	musicSlider.HandleSliderEvent(event);
 	fullCheckbox.HandleEvent(event);
@@ -141,6 +151,15 @@ void GSettings::HandleSettingsEvents(SDL_Event& event, bool& isRunning, GameStat
 		SDL_FPoint mousePos = { event.button.x, event.button.y };
 		if (SDL_PointInRectFloat(&mousePos, &xRect)) {
 			currentState = GameState::MENU;
+		}
+		if (fullCheckbox.isHovered(&mousePos)) {
+			bool checked = fullCheckbox.IsChecked();
+			SDL_SetWindowFullscreen(window, checked ? SDL_WINDOW_FULLSCREEN : 0);
+			if (!checked) SDL_MaximizeWindow(window);
+			Config conf = sManager->GetConfig();
+			conf.isFullscreen = checked;
+			sManager->SetConfig(conf); 
+			sManager->SaveSettingsToDB();
 		}
 	}
 }

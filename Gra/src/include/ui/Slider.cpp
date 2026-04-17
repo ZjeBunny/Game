@@ -65,7 +65,7 @@ public:
             my >= y - (hH - h) / 2.0f && my <= y + h + (hH - h) / 2.0f);
     }
     bool isDraggng() { return dragging; };
-    int setValue(int val) {
+    void setValue(int val) {
         value = val;
     }
 private:

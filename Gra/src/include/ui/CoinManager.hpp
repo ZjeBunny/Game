@@ -24,6 +24,7 @@ public:
 	void UpdatePosition(int windowW, int windowH);
 	double getTotalMoney() const { return totalMoney; }
 	bool isOverMoney(float mouseX, float mouseY);
+	void SetMoney(double mon) { totalMoney = mon; };
 	double substractMoney(double amount) { 
 		if (amount > totalMoney) return -1.0;
 		totalMoney -= amount; 

@@ -69,10 +69,10 @@ void Menu::RenderMenu(SDL_Renderer* renderer)
 	SDL_GetMouseState(&mX, &mY);
 	SDL_FPoint mousePos = { mX, mY };
 
-	HoverEffect(&NewGameButtonRect, NewGameButtonRect_Base, mousePos);
-	HoverEffect(&ContinueButtonRect, ContinueButtonRect_Base, mousePos);
-	HoverEffect(&SettingsButtonRect, SettingsButtonRect_Base, mousePos);
-	HoverEffect(&ExitButtonRect, ExitButtonRect_Base, mousePos);
+	Helper::HoverEffect(&NewGameButtonRect, NewGameButtonRect_Base, mousePos);
+	Helper::HoverEffect(&ContinueButtonRect, ContinueButtonRect_Base, mousePos);
+	Helper::HoverEffect(&SettingsButtonRect, SettingsButtonRect_Base, mousePos);
+	Helper::HoverEffect(&ExitButtonRect, ExitButtonRect_Base, mousePos);
 	if (MenuBackgroundTex) {
 		SDL_SetTextureScaleMode(MenuBackgroundTex, SDL_SCALEMODE_PIXELART);
 		SDL_RenderTexture(renderer, MenuBackgroundTex, nullptr, nullptr);
@@ -173,6 +173,7 @@ void Menu::HandleMenuEvents(SDL_Event& event, bool& isRunning, GameState& curren
 					else {
 						RunAnimation(renderer, NewGameButtonTex, "assets/new_game/new_game", 6, 100);
 						if (NewGamePrompt(renderer, winW, winH, this->font, event)) {
+							Helper::ResetSave(SavePath);
 							currentState = GameState::PLAYING;
 						}
 						else {
@@ -185,6 +186,7 @@ void Menu::HandleMenuEvents(SDL_Event& event, bool& isRunning, GameState& curren
 					LOG("Pressed Continue Button");
 					SDL_SetCursor(SDL_GetDefaultCursor());
 					RunAnimation(renderer, ContinueButtonTex, "assets/continue/continue", 7, 100);
+					currentState = GameState::PLAYING;
 				}
 				//Settings Button
 				if(SDL_PointInRectFloat(&mousePos, &SettingsButtonRect)) {
@@ -245,18 +247,6 @@ inline void Menu::RunAnimation(SDL_Renderer* renderer, SDL_Texture*& TexName, co
 	SDL_RenderPresent(renderer);
 }
 
-inline void Menu::HoverEffect(SDL_FRect* currentRect, const SDL_FRect& baseRect, const SDL_FPoint& mousePos) {
-	if (SDL_PointInRectFloat(&mousePos, &baseRect)) {
-		currentRect->w = baseRect.w * 1.1f;
-		currentRect->h = baseRect.h * 1.1f;
-		currentRect->x = baseRect.x - (currentRect->w - baseRect.w) / 2.0f;
-		currentRect->y = baseRect.y - (currentRect->h - baseRect.h) / 2.0f;
-	}
-	else {
-		*currentRect = baseRect;
-	}
-}
-
 bool Menu::NewGamePrompt(SDL_Renderer* renderer, int windowW, int windowH, TTF_Font* font, SDL_Event& event) {
 	PromptBackgroundRect = Helper::CalculateRectCenter(PromptBackgroundTex, 0.5f, 0.4f, windowW, windowH, 0.3f, true);
 	newGameTextQuestionRect = Helper::CalculateRectCenter(newGameTextQuestionTex, 0.4f, 0.05f, windowW, windowH, 0.35f, true);
@@ -283,8 +273,8 @@ bool Menu::NewGamePrompt(SDL_Renderer* renderer, int windowW, int windowH, TTF_F
 				else {
 					SDL_SetCursor(SDL_GetDefaultCursor());
 				}
-				HoverEffect(&newGameTextNoRect, newGameTextNoRect_Base, mousePos);
-				HoverEffect(&newGameTextYesRect, newGameTextYesRect_Base, mousePos);
+				Helper::HoverEffect(&newGameTextNoRect, newGameTextNoRect_Base, mousePos);
+				Helper::HoverEffect(&newGameTextYesRect, newGameTextYesRect_Base, mousePos);
 			}
 			if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
 				SDL_FPoint mousePos = { event.button.x, event.button.y };

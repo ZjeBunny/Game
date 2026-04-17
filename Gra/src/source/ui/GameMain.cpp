@@ -6,8 +6,11 @@ bool isMouseOver = false;
 
 void Main::LoadMainAssets(SDL_Renderer* renderer, int windowW, int windowH)
 {
-    SDL_Log("here6");
-
+    cm = new CoinManager();
+    saveSystem.CreateGameSave("src/save/GameSave.db");
+    InitUpgrades();
+    cm->SetMoney(saveSystem.GetMoney());
+    money = cm->getTotalMoney();
     SDL_SetHint(SDL_HINT_RENDER_DRIVER, "software");
     cursorPointer = SDL_CreateSystemCursor(SDL_SYSTEM_CURSOR_POINTER);
     font = TTF_OpenFont("assets/fonts/ThaleahFat.ttf", 18);
@@ -31,17 +34,17 @@ void Main::LoadMainAssets(SDL_Renderer* renderer, int windowW, int windowH)
     SDL_DestroySurface(opt1sur);
     SDL_DestroySurface(opt2sur);
     SDL_DestroySurface(opt3sur);
-
-    cm = new CoinManager();
+    
 
     UpdateLayout(windowW, windowH);
     shopBaseRect = shop_iconRect;
     pauseBaseRect = pauzeRect;
-    
+
 }
 
 void Main::RenderMain(SDL_Renderer* renderer)
 {
+
     float mX, mY;
     SDL_GetMouseState(&mX, &mY);
     SDL_FPoint mousePos = { mX, mY };
@@ -111,7 +114,9 @@ void Main::RenderMain(SDL_Renderer* renderer)
         if (opt1Tex) {
             opt1Rec.x = currentPos.x + marginX;
             opt1Rec.y = currentPos.y + optStartY;
-            if (activeOpt1) SDL_SetRenderDrawColor(renderer, 1, 0, 66, 255);
+            if (activeOpt1) {
+                SDL_SetRenderDrawColor(renderer, 1, 0, 66, 255);
+            }
             else           SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
             for (float i = 0; i < 4.0f; i++) {
                 SDL_FRect frame = { (opt1Rec.x + i) - 20, opt1Rec.y + i, (opt1Rec.w - (i * 2.0f)) + 40, opt1Rec.h - (i * 2.0f) };
@@ -124,7 +129,9 @@ void Main::RenderMain(SDL_Renderer* renderer)
         if (opt2Tex) {
             opt2Rec.x = currentPos.x + marginX + gap - 40;
             opt2Rec.y = currentPos.y + optStartY;
-            if (activeOpt2) SDL_SetRenderDrawColor(renderer, 1, 0, 66, 255);
+            if (activeOpt2) { 
+                SDL_SetRenderDrawColor(renderer, 1, 0, 66, 255); 
+            }
             else           SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
             for (float i = 0; i < 4.0f; i++) {
                 SDL_FRect frame = { (opt2Rec.x + i) - 20, opt2Rec.y + i, (opt2Rec.w - (i * 2.0f)) + 40, opt2Rec.h - (i * 2.0f) };
@@ -137,8 +144,10 @@ void Main::RenderMain(SDL_Renderer* renderer)
         if (opt3Tex) {
             opt3Rec.x = currentPos.x + marginX + (gap * 2.0f) - 40;
             opt3Rec.y = currentPos.y + optStartY;
-            if (activeOpt3) SDL_SetRenderDrawColor(renderer, 1, 0, 66, 255);
-            else           SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
+            if (activeOpt3) { 
+                SDL_SetRenderDrawColor(renderer, 1, 0, 66, 255); 
+            }
+            else SDL_SetRenderDrawColor(renderer, 128, 128, 128, 255);
             for (float i = 0; i < 4.0f; i++) {
                 SDL_FRect frame = { (opt3Rec.x + i) - 20, opt3Rec.y + i, (opt3Rec.w - (i * 2.0f)) + 40, opt3Rec.h - (i * 2.0f) };
                 SDL_RenderRect(renderer, &frame);
@@ -148,6 +157,7 @@ void Main::RenderMain(SDL_Renderer* renderer)
         }
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     }
+
 }
 
 void Main::UpdateLayout(int winW, int winH)
@@ -170,13 +180,22 @@ void Main::UpdateLayout(int winW, int winH)
     opt1Rec = Helper::CalculateRect(opt1Tex, 0.12f, 0.08f, winW, winH, 0.0f, 0.0f, false);
     opt2Rec = Helper::CalculateRect(opt2Tex, 0.12f, 0.08f, winW, winH, 0.0f, 0.0f, false);
     opt3Rec = Helper::CalculateRect(opt3Tex, 0.12f, 0.08f, winW, winH, 0.0f, 0.0f, false);
+
 }
 
 void Main::Update(SDL_Renderer* renderer)
 {
-    if (!renderer || !font) return;
+    money = cm->getTotalMoney();
+    Uint64 currentTime = SDL_GetTicks();
+    if (currentTime - lastSaveTime >= 30000) {
 
-    money = cm ? cm->getTotalMoney() : 0.0;
+        saveSystem.AutoSaveAll(this->money, this->upgrades);
+
+        lastSaveTime = currentTime;
+        std::cout << "Autozapis zakonczony sukcesem!" << std::endl;
+    }
+    if (!renderer || !font) return;
+    
     std::string newMoneyText = std::format("${:.2f}", money);
 
     if (newMoneyText != moneyText || !moneyTexture) {
@@ -198,6 +217,7 @@ void Main::Update(SDL_Renderer* renderer)
             UpdateLayout(w, h);
         }
     }
+
 }
 
 void Main::HandleMainEvents(SDL_Event& event, bool& isRunning, GameState& currentState, SDL_Renderer* renderer)
@@ -284,4 +304,20 @@ inline void Main::HoverEffect(SDL_FRect* currentRect, const SDL_FRect& baseRect,
     else {
         *currentRect = baseRect;
     }
+}
+
+void Main::InitUpgrades() {
+    Upgrade cent1;
+    cent1.name = "cent1";
+    cent1.level = 1;
+    cent1.maxLevel = 20;
+    cent1.base_multiplier = 2.0;
+    cent1.texture = "assets/1cent.png";
+
+    saveSystem.SaveGame(cent1);
+
+
+    saveSystem.LoadGameSave(1);
+
+    this->upgrades = saveSystem.GetUpgrades();
 }
